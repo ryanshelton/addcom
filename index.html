@@ -26,8 +26,8 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
 .hero-line {
   align-self: stretch;
   flex: none;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.25);
+  width: 2px;
+  background: #ffffff;
 }
 
 .hero-content {
@@ -35,6 +35,12 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
   flex-direction: column;
   gap: 40px;
   align-items: flex-start;
+}
+
+.hero-logo {
+  display: block;
+  width: 133px;
+  height: auto;
 }
 
 .hero-content h1 {
@@ -85,6 +91,7 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
 /* desktop: matches Figma "Desktop Max (MBP 14')" frame (node 1:11) */
 @media (min-width: 768px) {
   .hero { gap: 56px; padding: 72px 56px; }
+  .hero-logo { width: 195px; }
   .hero-content h1 { font-size: 100px; line-height: 100px; }
   .hero-content .lede { font-size: 24px; line-height: 32px; }
   .contact { gap: 16px; }
@@ -97,6 +104,7 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
 <div class="hero">
   <div class="hero-line"></div>
   <div class="hero-content">
+    <img class="hero-logo" src="assets/logo.svg" alt="Addcom">
     <h1>We're building<br>something new.</h1>
     <p class="lede">The next generation of Addcom's unified communications and managed IT platform is on its way.</p>
     <div class="contact">
@@ -140,6 +148,7 @@ const vec3 green   = vec3(0.30980, 0.98824, 0.50196); // #4FFC80
 const vec3 teal     = vec3(0.16078, 0.67451, 0.69804); // #29ACB2
 const vec3 blue     = vec3(0.02745, 0.40000, 0.67843); // #0766AD
 const vec3 deepBlue = vec3(0.00000, 0.01176, 0.15294); // #000327 - dark floor instead of flat black
+const vec3 black    = vec3(0.0, 0.0, 0.0);
 
 vec2 hash(vec2 p) {
   p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
@@ -205,40 +214,50 @@ void main() {
   vec2 warp = vec2(fbm(p * 0.8 + t * 0.6), fbm(p * 0.8 - t * 0.5 + 4.0)) * 0.08;
   vec2 pw = p + warp;
 
-  // four slow-drifting blobs, each anchored near a "home" spot then wandering gently
-  // (kept to blue / teal / cyan / green - orange muddied things when blended in)
+  // five slow-drifting blobs, each anchored near a "home" spot then wandering gently
+  // (kept to blue / teal / cyan / green / black - orange muddied things when blended in)
   // homes form an overlapping chain across the upper band: cyan (left) -> teal -> green (top-right)
+  // black sits in the bottom-left corner
   vec2 c1 = vec2(0.0, -0.05) + vec2(0.10 * sin(t * 0.62 + 0.0), 0.08 * cos(t * 0.48 + 1.1));
   vec2 c2 = vec2(-0.05, 0.32) + vec2(0.12 * sin(t * 0.51 + 2.0), 0.09 * cos(t * 0.63 + 3.3));
   vec2 c3 = vec2(-0.62, 0.15) + vec2(0.10 * cos(t * 0.71 + 1.4), 0.08 * sin(t * 0.55 + 0.6));
   vec2 c4 = vec2(0.48, 0.30) + vec2(0.12 * cos(t * 0.44 + 0.9), 0.10 * sin(t * 0.66 + 2.2));
+  vec2 c5 = vec2(-0.68, 0.06) + vec2(0.08 * cos(t * 0.5 + 0.4), 0.06 * sin(t * 0.6 + 1.7));
 
   float r1 = (0.30 + 0.04 * sin(t * 0.9)) * uScale;
   float r2 = (0.34 + 0.04 * cos(t * 0.7 + 1.0)) * uScale;
   float r3 = (0.42 + 0.03 * sin(t * 1.1 + 2.0)) * uScale;
   float r4 = (0.46 + 0.04 * cos(t * 0.8 + 0.3)) * uScale;
+  float r5 = (0.40 + 0.04 * sin(t * 0.85 + 1.2)) * uScale;
 
   float d1 = length(pw - c1) - r1;
   float d2 = length(pw - c2) - r2;
   float d3 = length(pw - c3) - r3;
   float d4 = length(pw - c4) - r4;
+  float d5 = length(pw - c5) - r5;
 
   float k = uSoftness;
   float d = d1;
   d = smin(d, d2, k);
   d = smin(d, d3, k);
   d = smin(d, d4, k);
+  d = smin(d, d5, k);
 
   float shape = 1.0 - smoothstep(-0.05, 0.35, d);
 
   // weighted color blend - each blob pulls color toward it near its own field
-  float w1 = exp(-max(d1, 0.0) * 6.0);
-  float w2 = exp(-max(d2, 0.0) * 6.0);
-  float w3 = exp(-max(d3, 0.0) * 6.0);
-  float w4 = exp(-max(d4, 0.0) * 6.0);
-  float wsum = w1 + w2 + w3 + w4 + 0.0001;
+  // unclamped (vs. max(d,0)) so weight keeps rising toward each blob's own
+  // center instead of plateauing at 1 throughout its whole interior - lets a
+  // smaller blob (like the black one) dominate its own core even when it
+  // overlaps a larger blob's radius
+  float w1 = exp(-d1 * 6.0);
+  float w2 = exp(-d2 * 6.0);
+  float w3 = exp(-d3 * 6.0);
+  float w4 = exp(-d4 * 6.0);
+  float w5 = exp(-d5 * 6.0);
+  float wsum = w1 + w2 + w3 + w4 + w5 + 0.0001;
 
-  vec3 blend = (w1 * blue + w2 * teal + w3 * cyan + w4 * green) / wsum;
+  vec3 blend = (w1 * blue + w2 * teal + w3 * cyan + w4 * green + w5 * black) / wsum;
 
   vec3 col = mix(navy, blend, shape);
 
@@ -287,9 +306,9 @@ const uBottomFade = gl.getUniformLocation(program, 'uBottomFade');
 // slider-controlled params
 const params = {
   speed: 10,
-  scale: 0.9,
-  softness: 0.12,
-  bottomFade: 0.72,
+  scale: 0.76,
+  softness: 0.2,
+  bottomFade: 1.2,
 };
 
 function resize() {
@@ -315,6 +334,56 @@ window.addEventListener('resize', resize);
 
 resize();
 requestAnimationFrame(draw);
+
+// --- slider panel ---------------------------------------------------------
+const sliderDefs = [
+  { key: 'speed', label: 'Speed', min: 1, max: 10, step: 1 },
+  { key: 'scale', label: 'Blob Size', min: 0.5, max: 1.8, step: 0.02 },
+  { key: 'softness', label: 'Merge Softness', min: 0.05, max: 0.5, step: 0.01 },
+  { key: 'bottomFade', label: 'Bottom Fade', min: 0.3, max: 1.2, step: 0.01 },
+];
+
+const panel = document.createElement('div');
+panel.style.cssText = `
+  position: fixed; bottom: 16px; left: 16px; z-index: 10;
+  background: rgba(1, 6, 70, 0.55); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
+  padding: 14px 16px; font: 12px/1.4 system-ui, sans-serif; color: #dfe7ff;
+  width: 200px; user-select: none;
+`;
+
+sliderDefs.forEach(def => {
+  const row = document.createElement('div');
+  row.style.cssText = 'margin-bottom: 10px;';
+
+  const labelRow = document.createElement('div');
+  labelRow.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:4px; opacity:0.85;';
+  const label = document.createElement('span');
+  label.textContent = def.label;
+  const value = document.createElement('span');
+  value.textContent = params[def.key];
+  labelRow.appendChild(label);
+  labelRow.appendChild(value);
+
+  const input = document.createElement('input');
+  input.type = 'range';
+  input.autocomplete = 'off';
+  input.min = def.min;
+  input.max = def.max;
+  input.step = def.step;
+  input.value = params[def.key];
+  input.style.cssText = 'width:100%; accent-color:#4FFC80;';
+  input.addEventListener('input', () => {
+    params[def.key] = parseFloat(input.value);
+    value.textContent = input.value;
+  });
+
+  row.appendChild(labelRow);
+  row.appendChild(input);
+  panel.appendChild(row);
+});
+
+document.body.appendChild(panel);
 </script>
 </body>
 </html>
