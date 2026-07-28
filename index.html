@@ -334,56 +334,6 @@ window.addEventListener('resize', resize);
 
 resize();
 requestAnimationFrame(draw);
-
-// --- slider panel ---------------------------------------------------------
-const sliderDefs = [
-  { key: 'speed', label: 'Speed', min: 1, max: 10, step: 1 },
-  { key: 'scale', label: 'Blob Size', min: 0.5, max: 1.8, step: 0.02 },
-  { key: 'softness', label: 'Merge Softness', min: 0.05, max: 0.5, step: 0.01 },
-  { key: 'bottomFade', label: 'Bottom Fade', min: 0.3, max: 1.2, step: 0.01 },
-];
-
-const panel = document.createElement('div');
-panel.style.cssText = `
-  position: fixed; bottom: 16px; left: 16px; z-index: 10;
-  background: rgba(1, 6, 70, 0.55); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-  padding: 14px 16px; font: 12px/1.4 system-ui, sans-serif; color: #dfe7ff;
-  width: 200px; user-select: none;
-`;
-
-sliderDefs.forEach(def => {
-  const row = document.createElement('div');
-  row.style.cssText = 'margin-bottom: 10px;';
-
-  const labelRow = document.createElement('div');
-  labelRow.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:4px; opacity:0.85;';
-  const label = document.createElement('span');
-  label.textContent = def.label;
-  const value = document.createElement('span');
-  value.textContent = params[def.key];
-  labelRow.appendChild(label);
-  labelRow.appendChild(value);
-
-  const input = document.createElement('input');
-  input.type = 'range';
-  input.autocomplete = 'off';
-  input.min = def.min;
-  input.max = def.max;
-  input.step = def.step;
-  input.value = params[def.key];
-  input.style.cssText = 'width:100%; accent-color:#4FFC80;';
-  input.addEventListener('input', () => {
-    params[def.key] = parseFloat(input.value);
-    value.textContent = input.value;
-  });
-
-  row.appendChild(labelRow);
-  row.appendChild(input);
-  panel.appendChild(row);
-});
-
-document.body.appendChild(panel);
 </script>
 </body>
 </html>
