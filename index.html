@@ -49,6 +49,7 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
   color: #4ffc80;
   font-size: 42px;
   line-height: 42px;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
@@ -106,7 +107,7 @@ canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh;
   <div class="hero-content">
     <img class="hero-logo" src="assets/logo.svg" alt="Addcom">
     <h1>We're building<br>something new.</h1>
-    <p class="lede">The next generation of Addcom's unified communications and managed IT platform is on its way.</p>
+    <p class="lede">The next generation of Addcom's platform is on its way.</p>
     <div class="contact">
       <div class="contact-row">
         <img src="assets/icon-phone.svg" alt="">
@@ -305,10 +306,10 @@ const uBottomFade = gl.getUniformLocation(program, 'uBottomFade');
 
 // slider-controlled params
 const params = {
-  speed: 10,
-  scale: 0.76,
+  speed: 15,
+  scale: 0.8,
   softness: 0.2,
-  bottomFade: 1.2,
+  bottomFade: 1,
 };
 
 function resize() {
