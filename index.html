@@ -3,123 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Addcom - We're building something new.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500&family=Roboto:wght@400&display=swap" rel="stylesheet">
+<title>Addcom</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #010646; overflow: hidden; }
 canvas { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh; }
-
-/* mobile-first: matches Figma "iPhone 13 & 14" frame (node 37:69) */
-.hero {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 64px 24px;
-}
-
-.hero-line {
-  align-self: stretch;
-  flex: none;
-  width: 2px;
-  background: #ffffff;
-}
-
-.hero-content {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  align-items: flex-start;
-}
-
-.hero-logo {
-  display: block;
-  width: 133px;
-  height: auto;
-}
-
-.hero-content h1 {
-  font-family: 'Figtree', sans-serif;
-  font-weight: 500;
-  color: #4ffc80;
-  font-size: 42px;
-  line-height: 42px;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.hero-content .lede {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  color: #ffffff;
-  font-size: 21px;
-  line-height: 28px;
-  max-width: 620px;
-  margin: 0;
-}
-
-.contact {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.contact-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 24px;
-  color: #ffffff;
-}
-
-.contact-row img { width: 24px; height: 24px; flex: none; }
-
-.contact-row a {
-  color: #4ffc80;
-  text-decoration: none;
-}
-
-.contact-row a:hover { text-decoration: underline; }
-
-/* desktop: matches Figma "Desktop Max (MBP 14')" frame (node 1:11) */
-@media (min-width: 768px) {
-  .hero { gap: 56px; padding: 72px 56px; }
-  .hero-logo { width: 195px; }
-  .hero-content h1 { font-size: 100px; line-height: 100px; }
-  .hero-content .lede { font-size: 24px; line-height: 32px; }
-  .contact { gap: 16px; }
-}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-
-<div class="hero">
-  <div class="hero-line"></div>
-  <div class="hero-content">
-    <img class="hero-logo" src="assets/logo.svg" alt="Addcom">
-    <h1>We're building<br>something new.</h1>
-    <p class="lede">The next generation of Addcom's platform is on its way.</p>
-    <div class="contact">
-      <div class="contact-row">
-        <img src="assets/icon-phone.svg" alt="">
-        <span>+61 1300 789 600 or +61 2 8877 5600</span>
-      </div>
-      <div class="contact-row">
-        <img src="assets/icon-paperplane.svg" alt="">
-        <a href="mailto:contact@addcom.com">contact@addcom.com</a>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 const canvas = document.getElementById('c');
